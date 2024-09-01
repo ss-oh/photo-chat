@@ -3,79 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Chat Room</title>
+    <title>Chat App with Image Upload</title>
     <style>
-        /* 스타일은 이전과 동일합니다 */
+        #messages { margin-top: 20px; }
+        .message { margin-bottom: 10px; }
+        .message img { max-width: 200px; } /* 이미지 크기 조절 */
     </style>
+    <script src="/socket.io/socket.io.js"></script> <!-- Socket.IO 클라이언트 라이브러리 -->
 </head>
 <body>
-    <h1>Photo Chat Room</h1>
-    <div class="container">
-        <div>
-            <input type="text" id="nicknameInput" placeholder="Enter your nickname" />
-        </div>
-        <div>
-            <input type="file" id="imageInput">
-            <button onclick="uploadImage()">Send Image</button>
-        </div>
-        <div>
-            <input type="text" id="chatInput" placeholder="Enter your message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+    <!-- 사용자 닉네임 입력 필드 -->
+    <input id="nicknameInput" placeholder="Enter your nickname">
+    <!-- 메시지 입력 필드 -->
+    <input id="messageInput" placeholder="Enter your message">
+    <!-- 이미지 파일 선택 필드 -->
+    <input id="imageInput" type="file" accept="image/*">
+    <!-- 메시지 전송 버튼 -->
+    <button onclick="sendMessage()">Send</button>
+    <!-- 채팅 메시지를 표시할 영역 -->
+    <div id="messages"></div>
 
-        <div class="chat-box" id="chatBox"></div>
-    </div>
-
-    <!-- socket.io 라이브러리를 서버에서 로드 -->
-    <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io.connect('http://localhost:3000'); // 서버 주소에 연결
-        let nickname = '';
+        // Socket.IO 서버에 연결
+        const socket = io('http://localhost:3000');
 
-        function uploadImage() {
-            const input = document.getElementById('imageInput');
-            const file = input.files[0];
-            const reader = new FileReader();
-
-            if (file) {
-                reader.onload = function(event) {
-                    const imageData = event.target.result;
-                    socket.emit('chatMessage', { nickname, type: 'image', data: imageData });
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
+        // 메시지와 이미지를 서버로 전송하는 함수
         function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value;
-
-            if (message.trim() !== '') {
-                socket.emit('chatMessage', { nickname, type: 'text', data: message });
-                input.value = ''; // 입력 필드 초기화
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            const nicknameInput = document.getElementById('nicknameInput');
+            const nickname = nicknameInput.value;
+            const imageInput = document.getElementById('imageInput');
+            const imageFile = imageInput.files[0];
+            
+            // FormData 객체를 사용하여 메시지와 이미지 파일을 전송
+            const formData = new FormData();
+            formData.append('message', message);
+            formData.append('nickname', nickname);
+            if (imageFile) {
+                formData.append('image', imageFile);
             }
+
+            // POST 요청을 통해 서버에 데이터 전송
+            fetch('/send', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                messageInput.value = ''; // 입력 필드 초기화
+                imageInput.value = ''; // 파일 선택 필드 초기화
+            })
+            .catch(error => console.error('Error:', error));
         }
 
-        socket.on('chatMessage', (msg) => {
-            const chatBox = document.getElementById('chatBox');
+        // 서버로부터 받은 메시지와 이미지를 화면에 표시
+        socket.on('chat message', (data) => {
+            const messagesDiv = document.getElementById('messages');
             const messageElement = document.createElement('div');
             messageElement.className = 'message';
-            
-            if (msg.type === 'text') {
-                messageElement.textContent = `${msg.nickname || 'Anonymous'}: ${msg.data}`;
-            } else if (msg.type === 'image') {
-                const imgElement = document.createElement('img');
-                imgElement.src = msg.data;
-                messageElement.textContent = `${msg.nickname || 'Anonymous'}:`;
-                messageElement.appendChild(imgElement);
+            messageElement.innerHTML = `<strong>${data.nickname}:</strong> ${data.message}`;
+
+            if (data.image) {
+                const img = document.createElement('img');
+                img.src = data.image; // 이미지 URL 설정
+                messageElement.appendChild(img);
             }
 
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        });
-
-        document.getElementById('nicknameInput').addEventListener('change', (e) => {
-            nickname = e.target.value.trim();
+            messagesDiv.appendChild(messageElement); // 메시지 추가
         });
     </script>
 </body>
