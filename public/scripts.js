@@ -1,4 +1,5 @@
-const socket = io(); // 서버 주소에 연결
+// public/scripts.js
+const socket = io();
 let nickname = '';
 
 function uploadImage() {

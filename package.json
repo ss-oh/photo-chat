@@ -1,11 +1,10 @@
 {
   "name": "photo-chat-app",
   "version": "1.0.0",
-  "description": "A real-time photo chat application",
+  "description": "A photo chat application",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
