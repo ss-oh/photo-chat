@@ -5,42 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Chat Room</title>
     <style>
-        /* 스타일은 이전과 동일합니다 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
         .chat-box {
+            max-height: 500px;
+            overflow-y: auto;
             border: 1px solid #ddd;
+            border-radius: 4px;
             padding: 10px;
-            height: 300px;
-            overflow-y: scroll;
-            margin-top: 10px;
+            background-color: #fafafa;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
         }
         .message img {
-            max-width: 200px;
-            max-height: 200px;
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        .input-group input,
+        .input-group button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Photo Chat Room</h1>
     <div class="container">
-        <div>
-            <input type="text" id="nicknameInput" placeholder="Enter your nickname" />
+        <h1>Photo Chat Room</h1>
+        <div class="input-group">
+            <input type="text" id="nicknameInput" placeholder="Enter your nickname">
         </div>
-        <div>
+        <div class="input-group">
             <input type="file" id="imageInput">
             <button onclick="uploadImage()">Send Image</button>
         </div>
-        <div>
+        <div class="input-group">
             <input type="text" id="chatInput" placeholder="Enter your message...">
             <button onclick="sendMessage()">Send</button>
         </div>
-
         <div class="chat-box" id="chatBox"></div>
     </div>
 
-    <!-- socket.io 라이브러리를 서버에서 로드 -->
+    <!-- socket.io 라이브러리 로드 -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io(); // 서버 주소에 연결
+        const socket = io(); // 서버 주소는 기본으로 설정됨
         let nickname = '';
 
         function uploadImage() {

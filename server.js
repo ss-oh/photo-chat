@@ -12,18 +12,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 클라이언트 소켓 연결 처리
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('A user connected');
 
     socket.on('chatMessage', (msg) => {
         io.emit('chatMessage', msg);
     });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log('User disconnected');
     });
 });
 
 // 서버를 3000 포트에서 실행
 server.listen(3000, () => {
-    console.log('listening on *:3000');
+    console.log('Listening on *:3000');
 });
