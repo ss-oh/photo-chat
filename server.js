@@ -14,10 +14,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 io.on('connection', (socket) => {
     console.log('A user connected');
 
+    // 채팅 메시지 수신 처리
     socket.on('chatMessage', (msg) => {
         io.emit('chatMessage', msg);
     });
 
+    // 소켓 연결 종료 처리
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
@@ -25,5 +27,5 @@ io.on('connection', (socket) => {
 
 // 서버를 3000 포트에서 실행
 server.listen(3000, () => {
-    console.log('Listening on *:3000');
+    console.log('Server is running on http://localhost:3000');
 });

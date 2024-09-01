@@ -1,16 +1,14 @@
 {
   "name": "photo-chat-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A real-time photo chat application",
   "main": "server.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
-  },
-  "devDependencies": {
-    "cross-env": "^7.0.3"
   }
 }
