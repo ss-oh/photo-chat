@@ -1,29 +1,24 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
-const path = require('path');
+const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = socketIo(server);
 
-// 정적 파일 제공
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
-// 클라이언트 소켓 연결 처리
 io.on('connection', (socket) => {
-    console.log('a user connected');
-
-    socket.on('chatMessage', (msg) => {
-        io.emit('chatMessage', msg);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
+  console.log('A user connected');
+  socket.on('message', (msg) => {
+    io.emit('message', msg);
+  });
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
 });
 
-// 서버를 3000 포트에서 실행
-server.listen(3000, () => {
-    console.log('listening on *:3000');
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
